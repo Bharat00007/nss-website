@@ -73,10 +73,10 @@ export default function AboutNssPage() {
           <span className="inline-block text-[10px] uppercase font-extrabold tracking-widest text-accent bg-accent/10 border border-accent/25 px-4 py-1.5 rounded-full">
             National Service Scheme
           </span>
-          <h1 className="text-4xl sm:text-5xl font-extrabold text-white tracking-tight">
+          <h1 className="text-4xl sm:text-5xl font-extrabold text-slate-900 dark:text-white tracking-tight">
             Not Me But You
           </h1>
-          <p className="text-sm sm:text-base text-slate-300 leading-relaxed">
+          <p className="text-sm sm:text-base text-slate-700 dark:text-slate-300 leading-relaxed">
             The NSS <span className="text-accent">Movement</span> aims to instill the idea of social welfare in students, providing service to society without bias.
           </p>
         </div>

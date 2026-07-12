@@ -42,18 +42,18 @@ function App() {
 
         {/* Titles */}
         <div className="space-y-4 mb-8 sm:mb-10 fade-up delay-200">
-          <h3 className="text-[10px] sm:text-sm md:text-base font-extrabold tracking-[0.3em] uppercase text-white/50">
+          <h3 className="text-[10px] sm:text-sm md:text-base font-extrabold tracking-[0.3em] uppercase text-slate-500 dark:text-white/50">
             Jhulelal Institute of Technology, NSS Unit
           </h3>
           <h1 className="text-4xl sm:text-6xl md:text-7xl lg:text-[5.5rem] font-black text-gradient drop-shadow-2xl pb-2 leading-tight">
             The New Faces <br /> of <span className="text-gradient-emerald">Impact</span>
           </h1>
-          <h2 className="text-xl sm:text-3xl md:text-4xl font-bold text-white/90 mt-4 sm:mt-6">
+          <h2 className="text-xl sm:text-3xl md:text-4xl font-bold text-slate-900 dark:text-white/90 mt-4 sm:mt-6">
             Unveiling the <span className="text-gradient-accent">Core Committee</span> 2026-27
           </h2>
         </div>
 
-        <p className="text-sm sm:text-lg md:text-xl text-white/60 max-w-2xl mx-auto mb-10 sm:mb-14 leading-relaxed font-normal fade-up delay-300 px-2 sm:px-0">
+        <p className="text-sm sm:text-lg md:text-xl text-slate-700 dark:text-white/60 max-w-2xl mx-auto mb-10 sm:mb-14 leading-relaxed font-normal fade-up delay-300 px-2 sm:px-0">
           Get ready to meet the dedicated visionaries leading the National Service Scheme. A new era of leadership,
           community service, and dedication is about to begin.
           <br /><span className="italic text-emerald-400/90 mt-4 inline-block font-medium tracking-wide">&quot;Not Me But You&quot;</span>
