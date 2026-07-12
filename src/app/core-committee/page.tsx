@@ -993,11 +993,11 @@ export default function CommitteeRevealPage() {
                       <div className="text-center space-y-3 pb-3 border-b border-white/10 relative z-10">
                         {/* 5 Logos centered, identical visual height, equal spacing */}
                         <div className="flex items-center justify-center gap-3">
-                          <img src="/images/logos/jit.png" alt="JIT Logo" className="h-6 w-auto object-contain" />
-                          <img src="/images/logos/nss.png" alt="NSS Logo" className="h-6 w-auto object-contain" />
-                          <img src="/images/logos/mybharatlogo_opt_2x.png" alt="MY Bharat Logo" className="h-6 w-auto object-contain" />
-                          <img src="/images/logos/naac.png" alt="NAAC Logo" className="h-6 w-auto object-contain" />
-                          <img src="/images/logos/nba.png" alt="NBA Logo" className="h-6 w-auto object-contain" />
+                          <img src="/images/logos/jit.png" alt="JIT Logo" className="h-6 w-auto object-contain shrink-0" />
+                          <img src="/images/logos/nss.png" alt="NSS Logo" className="h-6 w-auto object-contain shrink-0" />
+                          <img src="/images/logos/mybharatlogo_opt_2x.png" alt="MY Bharat Logo" className="h-6 w-auto object-contain shrink-0" />
+                          <img src="/images/logos/naac.png" alt="NAAC Logo" className="h-6 w-auto object-contain shrink-0" />
+                          <img src="/images/logos/nba.png" alt="NBA Logo" className="h-6 w-auto object-contain shrink-0" />
                         </div>
                         
                         <div className="space-y-0.5">
@@ -1018,7 +1018,7 @@ export default function CommitteeRevealPage() {
                         {/* Profile picture with whitespace around it */}
                         <div className={`relative h-24 w-24 rounded-full border-2 overflow-hidden shadow-lg flex items-center justify-center shrink-0 ${activeThemeConfig.borderColorClass} my-1`}>
                           <div 
-                            className="w-full h-full flex items-center justify-center origin-center"
+                            className="absolute inset-0 origin-center"
                             style={{
                               transform: `scale(${imageZoom}) translate(${imageOffsetX}px, ${imageOffsetY}px)`,
                               transition: "none"
@@ -1027,7 +1027,7 @@ export default function CommitteeRevealPage() {
                             <img 
                               src={uploadedImage || `/images/commitee/${selectedMember.name}.png`} 
                               alt={selectedMember.name}
-                              className="min-h-full min-w-full object-cover"
+                              className="h-full w-full object-cover"
                               onError={(e) => {
                                 (e.currentTarget as HTMLImageElement).src = `https://ui-avatars.com/api/?name=${encodeURIComponent(selectedMember.name)}&background=0d2b27&color=fff&size=256`;
                               }}
