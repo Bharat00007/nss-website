@@ -56,7 +56,7 @@ function App() {
         <p className="text-sm sm:text-lg md:text-xl text-white/60 max-w-2xl mx-auto mb-10 sm:mb-14 leading-relaxed font-normal fade-up delay-300 px-2 sm:px-0">
           Get ready to meet the dedicated visionaries leading the National Service Scheme. A new era of leadership,
           community service, and dedication is about to begin.
-          <br /><span className="italic text-emerald-400/90 mt-4 inline-block font-medium tracking-wide">"Not Me But You"</span>
+          <br /><span className="italic text-emerald-400/90 mt-4 inline-block font-medium tracking-wide">&quot;Not Me But You&quot;</span>
         </p>
 
       </div>

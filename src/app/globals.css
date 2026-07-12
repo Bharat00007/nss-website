@@ -1,0 +1,377 @@
+@import "tailwindcss";
+
+@custom-variant dark (&:is(.dark, .dark *));
+
+@layer utilities {
+  .text-accent {
+    color: var(--accent) !important;
+  }
+}
+
+:root {
+  /* ═══════════════════════════════════════════════════
+     Official NSS Institutional Color System — Light Mode
+     Inspired by the National Service Scheme Logo:
+     Deep Indigo · NSS Red · White · Charcoal · Gray
+     ═══════════════════════════════════════════════════ */
+  --background: #ffffff;
+  --foreground: #1a1a2e;
+
+  --card: #ffffff;
+  --card-foreground: #1a1a2e;
+
+  --popover: #ffffff;
+  --popover-foreground: #1a1a2e;
+
+  /* Primary: Deep Indigo (dominant NSS brand color) */
+  --primary: #1a237e;
+  --primary-foreground: #ffffff;
+
+  /* Secondary: Light Indigo Wash */
+  --secondary: #e8eaf6;
+  --secondary-foreground: #1a1a2e;
+
+  /* Muted: Cool Gray */
+  --muted: #f5f7fa;
+  --muted-foreground: #546e7a;
+
+  /* Accent: NSS Red */
+  --accent: #d32f2f;
+  --accent-foreground: #ffffff;
+
+  /* Destructive */
+  --destructive: #c62828;
+  --destructive-foreground: #ffffff;
+
+  --border: #e2e8f0;
+  --input: #e8eaf6;
+  --ring: #1a237e;
+
+  --radius: 0.75rem;
+
+  --glass-bg: rgba(255, 255, 255, 0.8);
+  --glass-border: rgba(226, 232, 240, 0.6);
+
+  /* NSS-specific tokens */
+  --nss-indigo: #1a237e;
+  --nss-indigo-light: #3949ab;
+  --nss-red: #d32f2f;
+  --nss-red-light: #ef5350;
+  --nss-charcoal: #1a1a2e;
+  --nss-warm-gray: #f5f7fa;
+}
+
+.dark {
+  /* ═══════════════════════════════════════════════════
+     Official NSS Institutional Color System — Dark Mode
+     Deep Navy foundation with Indigo & Red highlights
+     ═══════════════════════════════════════════════════ */
+  --background: #0c1220;
+  --foreground: #f0f4f8;
+
+  --card: #141e30;
+  --card-foreground: #f0f4f8;
+
+  --popover: #141e30;
+  --popover-foreground: #f0f4f8;
+
+  /* Primary: Lighter Indigo for visibility on dark */
+  --primary: #5c6bc0;
+  --primary-foreground: #ffffff;
+
+  /* Secondary: Deep Navy */
+  --secondary: #1c2a3d;
+  --secondary-foreground: #f0f4f8;
+
+  /* Muted: Slate Navy */
+  --muted: #1c2a3d;
+  --muted-foreground: #94a3b8;
+
+  /* Accent: Brighter Red for dark */
+  --accent: #ef5350;
+  --accent-foreground: #ffffff;
+
+  /* Destructive */
+  --destructive: #ef4444;
+  --destructive-foreground: #ffffff;
+
+  --border: #2d3a4e;
+  --input: #2d3a4e;
+  --ring: #5c6bc0;
+
+  --glass-bg: rgba(12, 18, 32, 0.8);
+  --glass-border: rgba(255, 255, 255, 0.06);
+
+  /* NSS-specific tokens (dark) */
+  --nss-indigo: #5c6bc0;
+  --nss-indigo-light: #7986cb;
+  --nss-red: #ef5350;
+  --nss-red-light: #ff8a80;
+  --nss-charcoal: #f0f4f8;
+  --nss-warm-gray: #1c2a3d;
+}
+
+@theme {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+
+  /* NSS Named Colors for direct use */
+  --color-nss-indigo: var(--nss-indigo);
+  --color-nss-indigo-light: var(--nss-indigo-light);
+  --color-nss-red: var(--nss-red);
+  --color-nss-red-light: var(--nss-red-light);
+  --color-nss-blue: var(--primary);
+  --color-nss-blue-light: var(--secondary);
+  --color-nss-gold: #f59e0b;
+  --color-nss-navy: var(--background);
+  --color-nss-navy-light: var(--card);
+
+  --font-sans: var(--font-body), ui-sans-serif, system-ui;
+  --font-heading: var(--font-heading), ui-sans-serif, system-ui;
+
+  --radius-lg: var(--radius);
+  --radius-md: calc(var(--radius) - 4px);
+  --radius-sm: calc(var(--radius) - 8px);
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background-color: var(--background);
+  color: var(--foreground);
+  transition: background-color 0.4s ease, color 0.4s ease;
+  overflow-x: hidden;
+  font-family: var(--font-body), sans-serif;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-heading), sans-serif;
+  letter-spacing: -0.02em;
+}
+
+/* ════════════════════════════════════════════
+   Glass Effects
+   ════════════════════════════════════════════ */
+.glass-effect {
+  background: var(--glass-bg);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid var(--glass-border);
+}
+
+.glass-card-premium {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(26, 35, 126, 0.08);
+  box-shadow: 0 10px 30px -10px rgba(26, 35, 126, 0.08);
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.dark .glass-card-premium {
+  background: rgba(20, 30, 48, 0.55);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  box-shadow: 0 4px 20px -6px rgba(0, 0, 0, 0.4);
+}
+
+.glass-card-premium:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 32px -8px rgba(26, 35, 126, 0.1);
+  border-color: rgba(26, 35, 126, 0.15);
+}
+
+.dark .glass-card-premium:hover {
+  box-shadow: 0 12px 32px -8px rgba(0, 0, 0, 0.6);
+  border-color: rgba(92, 107, 192, 0.15);
+}
+
+/* ════════════════════════════════════════════
+   Mesh Gradient Backgrounds (Indigo/Navy)
+   ════════════════════════════════════════════ */
+.bg-mesh-gradient-premium {
+  position: relative;
+  overflow: hidden;
+  background-color: #1a237e;
+}
+
+.dark .bg-mesh-gradient-premium {
+  background-color: #0c1220;
+}
+
+.bg-mesh-gradient-premium::before {
+  content: "";
+  position: absolute;
+  inset: -50%;
+  background: radial-gradient(circle at 30% 20%, #3949ab 0%, transparent 40%),
+              radial-gradient(circle at 70% 60%, #d32f2f 0%, transparent 35%),
+              radial-gradient(circle at 50% 90%, #1a237e 0%, transparent 40%);
+  opacity: 0.2;
+  filter: blur(80px);
+  animation: mesh-rotate 30s linear infinite;
+  z-index: 0;
+  pointer-events: none;
+}
+
+.dark .bg-mesh-gradient-premium::before {
+  opacity: 0.15;
+  background: radial-gradient(circle at 30% 20%, #283593 0%, transparent 45%),
+              radial-gradient(circle at 75% 65%, #b71c1c 0%, transparent 35%),
+              radial-gradient(circle at 50% 85%, #1a237e 0%, transparent 45%);
+}
+
+@keyframes mesh-rotate {
+  0% { transform: rotate(0deg); }
+  50% { transform: rotate(180deg) scale(1.1); }
+  100% { transform: rotate(360deg); }
+}
+
+/* ════════════════════════════════════════════
+   Floating Card Animation
+   ════════════════════════════════════════════ */
+@keyframes float-gentle {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-8px); }
+}
+
+@keyframes float-gentle-alt {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-12px); }
+}
+
+.animate-float {
+  animation: float-gentle 4s ease-in-out infinite;
+}
+
+.animate-float-alt {
+  animation: float-gentle-alt 5s ease-in-out infinite;
+}
+
+.animate-float-slow {
+  animation: float-gentle 6s ease-in-out infinite;
+}
+
+/* ════════════════════════════════════════════
+   Custom Scrollbar
+   ════════════════════════════════════════════ */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--background);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--border);
+  border-radius: 99px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--muted-foreground);
+}
+
+/* Swiper overrides */
+.swiper-pagination-bullet-active {
+  background: var(--primary) !important;
+}
+
+.swiper-button-next,
+.swiper-button-prev {
+  color: var(--primary) !important;
+}
+
+/* ════════════════════════════════════════════
+   Text Gradients (NSS Indigo/Red)
+   ════════════════════════════════════════════ */
+.text-gradient-primary {
+  background: linear-gradient(135deg, #1a237e 0%, #3949ab 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.dark .text-gradient-primary {
+  background: linear-gradient(135deg, #7986cb 0%, #9fa8da 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.text-gradient-accent {
+  background: linear-gradient(135deg, #d32f2f 0%, #e57373 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.dark .text-gradient-accent {
+  background: linear-gradient(135deg, #ef5350 0%, #ff8a80 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* Text stroke for decorative titles */
+.text-outline {
+  -webkit-text-stroke: 1px rgba(255, 255, 255, 0.25);
+  color: transparent;
+}
+
+/* ════════════════════════════════════════════
+   Global Link Inheritance Resets
+   ════════════════════════════════════════════ */
+a {
+  color: inherit;
+  text-decoration: none;
+}
+a:visited {
+  color: inherit;
+}
+
+/* ════════════════════════════════════════════
+   Red Buttons Text Color Refinement
+   ════════════════════════════════════════════ */
+.bg-accent,
+.bg-destructive,
+.bg-nss-red,
+.bg-nss-red-light,
+.bg-red-500,
+.bg-red-600,
+.bg-red-700,
+[class*="bg-accent"],
+[class*="bg-destructive"],
+[class*="bg-nss-red"] {
+  color: #ffffff !important;
+}
+
+/* Ensure child elements like icons or spans within red buttons are also white if needed */
+.bg-accent *,
+.bg-destructive *,
+.bg-nss-red *,
+.bg-nss-red-light *,
+.bg-red-500 *,
+.bg-red-600 *,
+.bg-red-700 *,
+[class*="bg-accent"] *,
+[class*="bg-destructive"] *,
+[class*="bg-nss-red"] * {
+  color: #ffffff !important;
+}
+
