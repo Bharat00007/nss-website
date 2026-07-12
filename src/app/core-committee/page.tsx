@@ -637,34 +637,70 @@ export default function CommitteeRevealPage() {
     }
   };
 
-  // Export exact DOM element used for the Live Appointment Card Preview
+  // Convert a single img element's src to a base64 data URL (bypasses CORS in html-to-image)
+  const imgToBase64 = async (img: HTMLImageElement): Promise<string | null> => {
+    try {
+      const resp = await fetch(img.src, { mode: "cors" });
+      const blob = await resp.blob();
+      return await new Promise<string>((res, rej) => {
+        const reader = new FileReader();
+        reader.onload = () => res(reader.result as string);
+        reader.onerror = rej;
+        reader.readAsDataURL(blob);
+      });
+    } catch {
+      return null; // leave src unchanged if fetch fails
+    }
+  };
+
+  // Export appointment card — pre-converts all images to base64 so html-to-image
+  // can render them even when they are cross-origin (CORS blocks foreignObject in SVG).
   const handleDownloadCard = async () => {
     if (!selectedMember || !previewCardRef.current || isDownloading) return;
+
+    const restorations: Array<{ img: HTMLImageElement; src: string }> = [];
 
     try {
       setIsDownloading(true);
       const element = previewCardRef.current;
 
-      // Temporarily remove parent CSS transforms (scale) on mobile so we get full-size render
+      // 1. Temporarily neutralise any mobile CSS scale on the parent wrapper
       const wrapper = element.parentElement as HTMLElement | null;
       if (wrapper) {
         wrapper.style.transform = "none";
         wrapper.style.marginBottom = "0";
       }
 
-      // Wait for all images inside the element to fully load
-      const images = element.querySelectorAll('img');
-      const imagePromises = Array.from(images).map(img => {
-        return new Promise<void>((resolve) => {
-          if (img.complete) return resolve();
-          img.onload = () => resolve();
-          img.onerror = () => resolve();
-        });
-      });
-      await Promise.all(imagePromises);
+      // 2. Convert every <img> inside the card to a base64 data URL.
+      //    This prevents the CORS/foreignObject block that makes images blank in the download.
+      const imgs = Array.from(element.querySelectorAll<HTMLImageElement>("img"));
+      await Promise.all(
+        imgs.map(async (img) => {
+          if (!img.src || img.src.startsWith("data:")) return; // already base64
+          const b64 = await imgToBase64(img);
+          if (b64) {
+            restorations.push({ img, src: img.src });
+            img.src = b64;
+          }
+        })
+      );
 
-      // Wait one frame for the DOM to settle after transform reset
+      // 3. Wait for images to finish loading after src swap
+      await Promise.all(
+        imgs.map(
+          (img) =>
+            new Promise<void>((resolve) => {
+              if (img.complete && img.naturalWidth > 0) return resolve();
+              img.onload = () => resolve();
+              img.onerror = () => resolve();
+            })
+        )
+      );
+
+      // 4. One paint frame to let the browser settle
       await new Promise<void>((resolve) => requestAnimationFrame(() => resolve()));
+
+      // 5. Capture — do NOT override margin/padding; the card's own p-7 must stay intact
       const dataUrl = await toPng(element, {
         cacheBust: true,
         pixelRatio: 3,
@@ -673,11 +709,13 @@ export default function CommitteeRevealPage() {
         style: {
           transform: "none",
           margin: "0",
-          padding: "0"
-        }
+        },
       });
 
-      // Restore the wrapper CSS scaling
+      // 6. Restore original image sources
+      restorations.forEach(({ img, src }) => { img.src = src; });
+
+      // 7. Restore the wrapper's mobile CSS scale
       if (wrapper) {
         wrapper.style.transform = "";
         wrapper.style.marginBottom = "";
@@ -692,6 +730,7 @@ export default function CommitteeRevealPage() {
       document.body.removeChild(link);
     } catch (error) {
       console.error("Failed to generate card PNG:", error);
+      restorations.forEach(({ img, src }) => { img.src = src; });
       if (previewCardRef.current?.parentElement) {
         (previewCardRef.current.parentElement as HTMLElement).style.transform = "";
         (previewCardRef.current.parentElement as HTMLElement).style.marginBottom = "";
