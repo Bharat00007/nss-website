@@ -620,15 +620,20 @@ export default function CommitteeRevealPage() {
     }());
   };
 
-  // Image Upload handler
+  // Image Upload handler — converts to base64 so html-to-image can render it
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
       const file = e.target.files[0];
-      const url = URL.createObjectURL(file);
-      setUploadedImage(url);
-      setImageZoom(1.2);
-      setImageOffsetX(0);
-      setImageOffsetY(0);
+      const reader = new FileReader();
+      reader.onload = (ev) => {
+        if (ev.target?.result) {
+          setUploadedImage(ev.target.result as string);
+          setImageZoom(1.2);
+          setImageOffsetX(0);
+          setImageOffsetY(0);
+        }
+      };
+      reader.readAsDataURL(file);
     }
   };
 
@@ -1025,9 +1030,11 @@ export default function CommitteeRevealPage() {
                           
                           {/* Visual separation of designation from Department & Year */}
                           <div className="pt-1.5 space-y-0.5">
-                            <p className={`text-[9px] font-semibold uppercase tracking-wider ${activeThemeConfig.textMutedClass}`}>
-                              {customDept || "Computer Science & Engineering"}
-                            </p>
+                            {customDept && (
+                              <p className={`text-[9px] font-semibold uppercase tracking-wider ${activeThemeConfig.textMutedClass}`}>
+                                {customDept}
+                              </p>
+                            )}
                             <p className={`text-[9px] font-bold ${activeThemeConfig.accentTextClass}`}>
                               {customYear}
                             </p>
