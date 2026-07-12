@@ -67,7 +67,7 @@ export default function AboutNssPage() {
       {/* Hero Banner */}
       <div className="relative bg-[#0B1F4D] overflow-hidden py-20 px-4">
         <div className="absolute inset-0 bg-gradient-to-br from-[#112a66] to-[#060f28] pointer-events-none" />
-        <div className="absolute inset-0 opacity-5 bg-[url('/images/logos/nss.png')] bg-no-repeat bg-center bg-contain pointer-events-none" />
+        <div className="absolute inset-0 opacity-5 bg-no-repeat bg-center bg-contain pointer-events-none" style={{ backgroundImage: "url('/images/logos/nss.png')" }} />
         {/* Hero Section */}
         <div className="text-center space-y-4 max-w-3xl mx-auto">
           <span className="inline-block text-[10px] uppercase font-extrabold tracking-widest text-accent bg-accent/10 border border-accent/25 px-4 py-1.5 rounded-full">

@@ -1,7 +1,6 @@
 @import "tailwindcss";
 
-@custom-variant dark (&:is(.dark, .dark *));
-
+/* Dark mode styling is handled via Tailwind's dark mode configuration */
 @layer utilities {
   .text-accent {
     color: var(--accent) !important;
