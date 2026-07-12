@@ -645,6 +645,18 @@ export default function CommitteeRevealPage() {
       setIsDownloading(true);
       const element = previewCardRef.current;
 
+      // On mobile, the parent .card-scale-wrapper has CSS transforms (scale 0.75–0.85)
+      // that affect html-to-image capture. Temporarily remove them so we always get
+      // a clean full-size 380×532 render regardless of viewport size.
+      const wrapper = element.parentElement as HTMLElement | null;
+      if (wrapper) {
+        wrapper.style.transform = "none";
+        wrapper.style.marginBottom = "0";
+      }
+
+      // Wait one frame for the DOM to settle after transform reset
+      await new Promise<void>((resolve) => requestAnimationFrame(() => resolve()));
+
       const dataUrl = await toPng(element, {
         cacheBust: true,
         pixelRatio: 3,
@@ -656,6 +668,12 @@ export default function CommitteeRevealPage() {
         }
       });
 
+      // Restore the wrapper so the CSS media-query scaling comes back
+      if (wrapper) {
+        wrapper.style.transform = "";
+        wrapper.style.marginBottom = "";
+      }
+
       const link = document.createElement("a");
       const cleanName = selectedMember.name.toLowerCase().replace(/\s+/g, "_");
       link.download = `jit_nss_appointment_card_${cleanName}_2026-27.png`;
@@ -665,6 +683,11 @@ export default function CommitteeRevealPage() {
       document.body.removeChild(link);
     } catch (error) {
       console.error("Failed to generate card PNG:", error);
+      // Restore wrapper transform even on error
+      if (previewCardRef.current?.parentElement) {
+        (previewCardRef.current.parentElement as HTMLElement).style.transform = "";
+        (previewCardRef.current.parentElement as HTMLElement).style.marginBottom = "";
+      }
       alert("An error occurred while generating the card image. Please try again.");
     } finally {
       setIsDownloading(false);
