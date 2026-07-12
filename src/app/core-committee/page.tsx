@@ -1289,13 +1289,14 @@ export default function CommitteeRevealPage() {
               Browse the officially designated leaders serving JIT NSS for the academic year 2026–27.
             </p>
             <div className="pt-4 flex justify-center">
-              <button
-                onClick={() => {}}
+              <a
+                href="/results/NSS_Committee_Results_2026_27.pdf"
+                download="NSS_Committee_Directory_2026_27.pdf"
                 className="rounded-lg bg-card border border-border hover:bg-muted px-6 py-2.5 text-xs font-bold text-foreground shadow-md transition-all inline-flex items-center gap-2 group cursor-pointer"
               >
                 <Download className="h-4 w-4 group-hover:text-accent transition-colors" />
                 <span>Download Executive Committee Directory (PDF)</span>
-              </button>
+              </a>
             </div>
           </div>
 
