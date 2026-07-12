@@ -637,7 +637,7 @@ export default function CommitteeRevealPage() {
     }
   };
 
-  // Export exact DOM element used for the Live Appointment Card Preview (Pixel-perfect & High-Res)
+  // Export exact DOM element used for the Live Appointment Card Preview
   const handleDownloadCard = async () => {
     if (!selectedMember || !previewCardRef.current || isDownloading) return;
 
@@ -645,38 +645,29 @@ export default function CommitteeRevealPage() {
       setIsDownloading(true);
       const element = previewCardRef.current;
 
-      // On mobile, the parent .card-scale-wrapper has CSS transforms (scale 0.75–0.85)
-      // that affect html-to-image capture. Temporarily remove them so we always get
-      // a clean full-size 380×532 render regardless of viewport size.
+      // Temporarily remove parent CSS transforms (scale) on mobile so we get full-size render
       const wrapper = element.parentElement as HTMLElement | null;
       if (wrapper) {
         wrapper.style.transform = "none";
         wrapper.style.marginBottom = "0";
       }
 
-      // Wait one frame for the DOM to settle after transform reset
-      await new Promise<void>((resolve) => requestAnimationFrame(() => resolve()));
-      // Wait for all images to load
+      // Wait for all images inside the element to fully load
       const images = element.querySelectorAll('img');
       const imagePromises = Array.from(images).map(img => {
         return new Promise<void>((resolve) => {
-          if (img.complete) {
-            resolve();
-          } else {
-            img.onload = () => resolve();
-            img.onerror = () => resolve(); // Still resolve on error to continue
-          }
+          if (img.complete) return resolve();
+          img.onload = () => resolve();
+          img.onerror = () => resolve();
         });
       });
-
       await Promise.all(imagePromises);
-      
-      // Add a small delay to ensure rendering is complete
-      await new Promise(resolve => setTimeout(resolve, 200));
 
+      // Wait one frame for the DOM to settle after transform reset
+      await new Promise<void>((resolve) => requestAnimationFrame(() => resolve()));
       const dataUrl = await toPng(element, {
         cacheBust: true,
-        pixelRatio: 2,
+        pixelRatio: 3,
         width: 380,
         height: 532,
         style: {
@@ -686,7 +677,7 @@ export default function CommitteeRevealPage() {
         }
       });
 
-      // Restore the wrapper so the CSS media-query scaling comes back
+      // Restore the wrapper CSS scaling
       if (wrapper) {
         wrapper.style.transform = "";
         wrapper.style.marginBottom = "";
@@ -701,7 +692,6 @@ export default function CommitteeRevealPage() {
       document.body.removeChild(link);
     } catch (error) {
       console.error("Failed to generate card PNG:", error);
-      // Restore wrapper transform even on error
       if (previewCardRef.current?.parentElement) {
         (previewCardRef.current.parentElement as HTMLElement).style.transform = "";
         (previewCardRef.current.parentElement as HTMLElement).style.marginBottom = "";
@@ -1003,11 +993,11 @@ export default function CommitteeRevealPage() {
                       <div className="text-center space-y-3 pb-3 border-b border-white/10 relative z-10">
                         {/* 5 Logos centered, identical visual height, equal spacing */}
                         <div className="flex items-center justify-center gap-3">
-                          <img src="/images/logos/jit.png" alt="JIT Logo" className="h-6 w-auto object-contain" />
-                          <img src="/images/logos/nss.png" alt="NSS Logo" className="h-6 w-auto object-contain" />
-                          <img src="/images/logos/mybharatlogo_opt_2x.png" alt="MY Bharat Logo" className="h-6 w-auto object-contain" />
-                          <img src="/images/logos/naac.png" alt="NAAC Logo" className="h-6 w-auto object-contain" />
-                          <img src="/images/logos/nba.png" alt="NBA Logo" className="h-6 w-auto object-contain" />
+                          <img src="/images/logos/jit.png" alt="JIT Logo" className="h-6 w-auto object-contain shrink-0" />
+                          <img src="/images/logos/nss.png" alt="NSS Logo" className="h-6 w-auto object-contain shrink-0" />
+                          <img src="/images/logos/mybharatlogo_opt_2x.png" alt="MY Bharat Logo" className="h-6 w-auto object-contain shrink-0" />
+                          <img src="/images/logos/naac.png" alt="NAAC Logo" className="h-6 w-auto object-contain shrink-0" />
+                          <img src="/images/logos/nba.png" alt="NBA Logo" className="h-6 w-auto object-contain shrink-0" />
                         </div>
                         
                         <div className="space-y-0.5">
@@ -1027,23 +1017,27 @@ export default function CommitteeRevealPage() {
                       <div className="flex flex-col items-center text-center my-4 space-y-3 relative z-10 flex-1 justify-center">
                         {/* Profile picture with whitespace around it */}
                         <div className={`relative h-24 w-24 rounded-full border-2 overflow-hidden shadow-lg flex items-center justify-center shrink-0 ${activeThemeConfig.borderColorClass} my-1`}>
-                          <img 
-                            src={uploadedImage || `/images/commitee/${selectedMember.name}.png`} 
-                            alt={selectedMember.name}
+                          <div 
+                            className="absolute inset-0 origin-center"
                             style={{
                               transform: `scale(${imageZoom}) translate(${imageOffsetX}px, ${imageOffsetY}px)`,
                               transition: "none"
                             }}
-                            className="h-full w-full object-cover"
-                            onError={(e) => {
-                              (e.currentTarget as HTMLImageElement).src = `https://ui-avatars.com/api/?name=${encodeURIComponent(selectedMember.name)}&background=0d2b27&color=fff&size=256`;
-                            }}
-                          />
+                          >
+                            <img 
+                              src={uploadedImage || `/images/commitee/${selectedMember.name}.png`} 
+                              alt={selectedMember.name}
+                              className="h-full w-full object-cover"
+                              onError={(e) => {
+                                (e.currentTarget as HTMLImageElement).src = `https://ui-avatars.com/api/?name=${encodeURIComponent(selectedMember.name)}&background=0d2b27&color=fff&size=256`;
+                              }}
+                            />
+                          </div>
                         </div>
 
                         {/* Visual hierarchy spacing */}
                         <div className="space-y-2">
-                          <h3 className={`text-base sm:text-lg font-black tracking-tight leading-tight ${activeThemeConfig.titleTextClass}`}>
+                          <h3 className={`text-lg font-black tracking-tight leading-tight ${activeThemeConfig.titleTextClass}`}>
                             {selectedMember.name.toUpperCase()}
                           </h3>
                           <p className={`text-xs uppercase font-extrabold tracking-wider ${activeThemeConfig.accentTextClass}`}>
@@ -1075,7 +1069,7 @@ export default function CommitteeRevealPage() {
                       </div>
 
                       {/* Footer */}
-                      <div className={`border-t border-white/10 pt-3 flex items-center justify-between text-[8px] sm:text-[9px] font-bold uppercase tracking-wider opacity-75 relative z-10 ${activeThemeConfig.footerTextClass}`}>
+                      <div className={`border-t border-white/10 pt-3 flex items-center justify-between text-[9px] font-bold uppercase tracking-wider opacity-75 relative z-10 ${activeThemeConfig.footerTextClass}`}>
                         <span>Tenure 2026-27</span>
                         <span className={activeThemeConfig.accentTextClass}>JIT NSS UNIT</span>
                       </div>
