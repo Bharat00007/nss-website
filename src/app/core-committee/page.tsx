@@ -640,14 +640,33 @@ export default function CommitteeRevealPage() {
       setIsDownloading(true);
       const element = previewCardRef.current;
 
+      // Wait for all images to load
+      const images = element.querySelectorAll('img');
+      const imagePromises = Array.from(images).map(img => {
+        return new Promise<void>((resolve) => {
+          if (img.complete) {
+            resolve();
+          } else {
+            img.onload = () => resolve();
+            img.onerror = () => resolve(); // Still resolve on error to continue
+          }
+        });
+      });
+
+      await Promise.all(imagePromises);
+      
+      // Add a small delay to ensure rendering is complete
+      await new Promise(resolve => setTimeout(resolve, 200));
+
       const dataUrl = await toPng(element, {
         cacheBust: true,
-        pixelRatio: 3,
+        pixelRatio: 2,
         width: 380,
         height: 532,
         style: {
           transform: "none",
-          margin: "0"
+          margin: "0",
+          padding: "0"
         }
       });
 
