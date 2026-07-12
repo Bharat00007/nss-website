@@ -653,41 +653,59 @@ export default function CommitteeRevealPage() {
     }
   };
 
-  // Export appointment card — pre-converts all images to base64 so html-to-image
-  // can render them even when they are cross-origin (CORS blocks foreignObject in SVG).
+  // Export appointment card —
+  //   Phase 1: convert all <img> srcs to base64 on the live element (defeats CORS in html-to-image)
+  //   Phase 2: deep-clone into an off-screen fixed container that is completely outside
+  //            the mobile CSS scaling context (defeats transform: scale alignment issues)
   const handleDownloadCard = async () => {
     if (!selectedMember || !previewCardRef.current || isDownloading) return;
 
     const restorations: Array<{ img: HTMLImageElement; src: string }> = [];
+    let offscreen: HTMLDivElement | null = null;
 
     try {
       setIsDownloading(true);
-      const element = previewCardRef.current;
+      const source = previewCardRef.current;
 
-      // 1. Temporarily neutralise any mobile CSS scale on the parent wrapper
-      const wrapper = element.parentElement as HTMLElement | null;
-      if (wrapper) {
-        wrapper.style.transform = "none";
-        wrapper.style.marginBottom = "0";
-      }
-
-      // 2. Convert every <img> inside the card to a base64 data URL.
-      //    This prevents the CORS/foreignObject block that makes images blank in the download.
-      const imgs = Array.from(element.querySelectorAll<HTMLImageElement>("img"));
+      // ── Phase 1: swap every <img> to a base64 data URL ────────────────────────
+      // html-to-image uses SVG foreignObject which blocks cross-origin img tags.
+      // Converting to data: URLs makes them same-origin → canvas renders them correctly.
+      const sourceImgs = Array.from(source.querySelectorAll<HTMLImageElement>("img"));
       await Promise.all(
-        imgs.map(async (img) => {
-          if (!img.src || img.src.startsWith("data:")) return; // already base64
+        sourceImgs.map(async (img) => {
+          if (!img.src || img.src.startsWith("data:")) return; // already safe
           const b64 = await imgToBase64(img);
           if (b64) {
-            restorations.push({ img, src: img.src });
+            restorations.push({ img, src: img.src }); // remember original for cleanup
             img.src = b64;
+            // wait for the browser to finish swapping the src
+            await new Promise<void>((resolve) => {
+              if (img.complete && img.naturalWidth > 0) return resolve();
+              img.onload = () => resolve();
+              img.onerror = () => resolve();
+            });
           }
         })
       );
 
-      // 3. Wait for images to finish loading after src swap
+      // ── Phase 2: off-screen clone at true card size ───────────────────────────
+      // position:fixed puts the clone outside the page flow and outside ANY ancestor
+      // transform (including the mobile card-scale-wrapper scale).
+      offscreen = document.createElement("div");
+      offscreen.style.cssText =
+        "position:fixed;top:-9999px;left:-9999px;width:380px;height:532px;" +
+        "overflow:visible;z-index:-9999;transform:none;pointer-events:none;";
+      document.body.appendChild(offscreen);
+
+      // Clone the card — images are already base64 so they survive the clone
+      const clone = source.cloneNode(true) as HTMLElement;
+      clone.style.cssText += ";width:380px;height:532px;transform:none;margin:0;";
+      offscreen.appendChild(clone);
+
+      // Wait for the cloned images (browser may need to re-load even from data: URLs)
+      const cloneImgs = Array.from(clone.querySelectorAll<HTMLImageElement>("img"));
       await Promise.all(
-        imgs.map(
+        cloneImgs.map(
           (img) =>
             new Promise<void>((resolve) => {
               if (img.complete && img.naturalWidth > 0) return resolve();
@@ -697,30 +715,24 @@ export default function CommitteeRevealPage() {
         )
       );
 
-      // 4. One paint frame to let the browser settle
+      // One paint frame to let the browser settle the off-screen layout
       await new Promise<void>((resolve) => requestAnimationFrame(() => resolve()));
 
-      // 5. Capture — do NOT override margin/padding; the card's own p-7 must stay intact
-      const dataUrl = await toPng(element, {
+      // ── Capture ───────────────────────────────────────────────────────────────
+      const dataUrl = await toPng(clone, {
         cacheBust: true,
         pixelRatio: 3,
         width: 380,
         height: 532,
-        style: {
-          transform: "none",
-          margin: "0",
-        },
+        style: { transform: "none", margin: "0" },
       });
 
-      // 6. Restore original image sources
-      restorations.forEach(({ img, src }) => { img.src = src; });
+      // ── Cleanup ───────────────────────────────────────────────────────────────
+      document.body.removeChild(offscreen);
+      offscreen = null;
+      restorations.forEach(({ img, src }) => { img.src = src; }); // restore live card imgs
 
-      // 7. Restore the wrapper's mobile CSS scale
-      if (wrapper) {
-        wrapper.style.transform = "";
-        wrapper.style.marginBottom = "";
-      }
-
+      // ── Trigger download ──────────────────────────────────────────────────────
       const link = document.createElement("a");
       const cleanName = selectedMember.name.toLowerCase().replace(/\s+/g, "_");
       link.download = `jit_nss_appointment_card_${cleanName}_2026-27.png`;
@@ -731,12 +743,9 @@ export default function CommitteeRevealPage() {
     } catch (error) {
       console.error("Failed to generate card PNG:", error);
       restorations.forEach(({ img, src }) => { img.src = src; });
-      if (previewCardRef.current?.parentElement) {
-        (previewCardRef.current.parentElement as HTMLElement).style.transform = "";
-        (previewCardRef.current.parentElement as HTMLElement).style.marginBottom = "";
-      }
       alert("An error occurred while generating the card image. Please try again.");
     } finally {
+      if (offscreen) document.body.removeChild(offscreen);
       setIsDownloading(false);
     }
   };
