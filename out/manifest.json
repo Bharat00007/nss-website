@@ -1,0 +1,17 @@
+{
+  "name": "Jhulelal Institute of Technology NSS Unit",
+  "short_name": "JIT NSS",
+  "description": "National Service Scheme Unit of Jhulelal Institute of Technology, Nagpur",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#060b19",
+  "theme_color": "#003A8C",
+  "icons": [
+    {
+      "src": "/images/logos/nss.png",
+      "sizes": "478x478",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
