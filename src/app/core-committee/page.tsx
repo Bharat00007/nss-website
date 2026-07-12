@@ -665,27 +665,9 @@ export default function CommitteeRevealPage() {
 
       // Wait one frame for the DOM to settle after transform reset
       await new Promise<void>((resolve) => requestAnimationFrame(() => resolve()));
-      // Wait for all images to load
-      const images = element.querySelectorAll('img');
-      const imagePromises = Array.from(images).map(img => {
-        return new Promise<void>((resolve) => {
-          if (img.complete) {
-            resolve();
-          } else {
-            img.onload = () => resolve();
-            img.onerror = () => resolve(); // Still resolve on error to continue
-          }
-        });
-      });
-
-      await Promise.all(imagePromises);
-      
-      // Add a small delay to ensure rendering is complete
-      await new Promise(resolve => setTimeout(resolve, 200));
-
       const dataUrl = await toPng(element, {
         cacheBust: true,
-        pixelRatio: 2,
+        pixelRatio: 3,
         width: 380,
         height: 532,
         style: {
